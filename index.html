@@ -1,0 +1,344 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가치투자 대시보드</title>
+<style>
+:root{--bg:#F3F1EA;--surface:#FFFFFF;--border:#E4DFD2;--ink:#1E3B36;--ink-soft:#33564E;
+--text-primary:#211E19;--text-secondary:#6E6858;--text-muted:#9A947F;--good:#2F6B4F;--bad:#AE4A30;
+--chip-us-bg:#E7EEEC;--chip-us-text:#1E3B36;--chip-kr-bg:#F1E7DC;--chip-kr-text:#7A4A22;--bar:#DCE7E3}
+@media (prefers-color-scheme: dark){:root{--bg:#161512;--surface:#1E1C18;--border:#332F27;--ink:#7FBBA9;
+--ink-soft:#5C9686;--text-primary:#EFEBE1;--text-secondary:#B0A891;--text-muted:#7C7563;--good:#6EC493;
+--bad:#E08669;--chip-us-bg:#233230;--chip-us-text:#9BCFC0;--chip-kr-bg:#332A1D;--chip-kr-text:#D6A96F;--bar:#2A3833}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg)}
+.page{background:var(--bg);color:var(--text-primary);
+font-family:-apple-system,BlinkMacSystemFont,"Malgun Gothic","Apple SD Gothic Neo",Segoe UI,sans-serif;
+max-width:520px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.top{padding:0.5rem 0 1.25rem;border-bottom:1px solid var(--border)}
+.top-mark{font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:15px;letter-spacing:0.14em;
+font-weight:500;color:var(--ink)}
+.top-mark span{color:var(--text-muted)}
+.top-sub{margin-top:0.35rem;font-size:13px;color:var(--text-secondary);line-height:1.5}
+.top-time{margin-top:0.5rem;font-size:11px;color:var(--text-muted);font-family:ui-monospace,monospace}
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);margin:1.1rem 0 1.6rem;border:1px solid var(--border);
+border-radius:12px;overflow:hidden;background:var(--surface)}
+.stat{padding:0.85rem 0.5rem;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-num{display:block;font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:22px;font-weight:500;
+color:var(--ink);font-variant-numeric:tabular-nums}
+.stat-label{display:block;margin-top:0.2rem;font-size:11px;color:var(--text-secondary)}
+.block{margin-bottom:1.75rem}
+.block-title{font-size:13px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;
+letter-spacing:0.08em;margin:0 0 0.75rem}
+.pos-grid{display:flex;flex-direction:column;gap:0.75rem}
+.pos-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.95rem 1rem}
+.pos-head{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
+.pos-id{display:flex;align-items:baseline;gap:0.5rem;min-width:0}
+.ticker{font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:15px;font-weight:500;color:var(--ink)}
+.pos-name{font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{flex:none;font-size:11px;font-weight:500;padding:0.15rem 0.5rem;border-radius:999px}
+.chip-us{background:var(--chip-us-bg);color:var(--chip-us-text)}
+.chip-kr{background:var(--chip-kr-bg);color:var(--chip-kr-text)}
+.pos-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-top:0.8rem}
+.metric{display:flex;flex-direction:column;gap:0.15rem}
+.metric-pl{text-align:right}
+.metric-label{font-size:10.5px;color:var(--text-muted)}
+.metric-value{font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:15px;font-weight:500;
+font-variant-numeric:tabular-nums}
+.metric-value.muted{color:var(--text-secondary);font-weight:400}
+.pl-good{color:var(--good)}
+.pl-bad{color:var(--bad)}
+.pl-flat{color:var(--text-secondary)}
+.pos-meta{margin-top:0.65rem;font-size:11px;color:var(--text-muted)}
+.news-list{list-style:none;margin:0.6rem 0 0;padding-top:0.6rem;border-top:1px solid var(--border);
+display:flex;flex-direction:column;gap:0.4rem}
+.news-list li{display:flex;gap:0.55rem;font-size:12.5px;line-height:1.45}
+.nd{flex:none;font-family:ui-monospace,monospace;color:var(--text-muted);font-size:11px;padding-top:0.1rem}
+.nt{color:var(--text-secondary)}
+.nt.muted{color:var(--text-muted)}
+.src-list{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.4rem 1rem}
+.src-row{display:flex;align-items:center;gap:0.65rem;padding:0.55rem 0;border-bottom:1px solid var(--border)}
+.src-row:last-child{border-bottom:none}
+.src-name{flex:0 0 auto;width:38%;font-size:12.5px;color:var(--text-secondary);white-space:nowrap;
+overflow:hidden;text-overflow:ellipsis}
+.src-bar-track{flex:1;height:6px;border-radius:3px;background:var(--bar);overflow:hidden}
+.src-bar{height:100%;background:var(--ink-soft);border-radius:3px}
+.src-count{flex:none;width:2rem;text-align:right;font-family:ui-monospace,monospace;font-size:12.5px;
+font-variant-numeric:tabular-nums}
+.empty{font-size:13px;color:var(--text-muted)}
+.hold-list{display:flex;flex-direction:column;gap:0.6rem}
+.hold-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 0.9rem}
+.hold-head{display:flex;align-items:center;gap:0.45rem}
+.ticker.sm{font-size:13px}
+.chip.sm{margin-left:auto;font-size:10px;padding:0.1rem 0.4rem}
+.hold-item .news-list{border-top:none;padding-top:0.5rem;margin-top:0.4rem}
+.hold-item .pos-name{font-size:12.5px}
+.foot{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border)}
+.foot p{margin:0;font-size:11.5px;color:var(--text-muted);line-height:1.6}
+</style></head><body>
+<div class="page">
+  <header class="top">
+    <div class="top-mark">VALUE<span>LEDGER</span></div>
+    <div class="top-sub">인베스팅닷컴 적정가치 기반 관심목록 &amp; 포지션</div>
+    <div class="top-time">갱신 2026-08-15 13:43</div>
+  </header>
+  <section class="stats-strip">
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">보유 포지션</span></div>
+    <div class="stat"><span class="stat-num">196</span><span class="stat-label">관심종목</span></div>
+    <div class="stat"><span class="stat-num">84%</span><span class="stat-label">적정가치 확보</span></div>
+  </section>
+  <section class="block"><h2 class="block-title">보유 포지션</h2><div class="pos-grid">
+    <article class="pos-card">
+      <header class="pos-head">
+        <div class="pos-id">
+          <span class="ticker">BAC</span>
+          <span class="pos-name">Bank of America</span>
+        </div>
+        <span class="chip chip-us">US</span>
+      </header>
+      <div class="pos-metrics">
+        <div class="metric"><span class="metric-label">현재가</span>
+          <span class="metric-value">$64.49</span></div>
+        <div class="metric"><span class="metric-label">진입가</span>
+          <span class="metric-value muted">$64.49</span></div>
+        <div class="metric metric-pl"><span class="metric-label">손익</span>
+          <span class="metric-value pl-flat">+0.0%</span></div>
+      </div>
+      <div class="pos-meta">진입일 2026-08-15</div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">Greg Abel의 Berkshire Hathaway의 3,580억 달러 투자 포트폴리오에 대한 점검</span></li><li><span class="nd">08/14</span><span class="nt">분석가에 따르면 AI 거래의 하락은 염가투자 투자자들에게 기회를 창출했다고 합니다.</span></li></ul>
+    </article>
+    <article class="pos-card">
+      <header class="pos-head">
+        <div class="pos-id">
+          <span class="ticker">STZ</span>
+          <span class="pos-name">Constellation Brands A</span>
+        </div>
+        <span class="chip chip-us">US</span>
+      </header>
+      <div class="pos-metrics">
+        <div class="metric"><span class="metric-label">현재가</span>
+          <span class="metric-value">$139.18</span></div>
+        <div class="metric"><span class="metric-label">진입가</span>
+          <span class="metric-value muted">$139.18</span></div>
+        <div class="metric metric-pl"><span class="metric-label">손익</span>
+          <span class="metric-value pl-flat">+0.0%</span></div>
+      </div>
+      <div class="pos-meta">진입일 2026-08-15</div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">CEO이자 최고 주식 선택자인 Greg Abel은 이번 시즌 동안 회사의 금융 주식 포트폴리오를 줄였</span></li><li><span class="nd">08/11</span><span class="nt">Mad Money의 8월 6일 에피소드에서 Jim Cramer는 최근 추세에 대한 시장 분석에 집중했</span></li></ul>
+    </article>
+    <article class="pos-card">
+      <header class="pos-head">
+        <div class="pos-id">
+          <span class="ticker">LEN</span>
+          <span class="pos-name">Lennar</span>
+        </div>
+        <span class="chip chip-us">US</span>
+      </header>
+      <div class="pos-metrics">
+        <div class="metric"><span class="metric-label">현재가</span>
+          <span class="metric-value">$86.83</span></div>
+        <div class="metric"><span class="metric-label">진입가</span>
+          <span class="metric-value muted">$86.83</span></div>
+        <div class="metric metric-pl"><span class="metric-label">손익</span>
+          <span class="metric-value pl-flat">+0.0%</span></div>
+      </div>
+      <div class="pos-meta">진입일 2026-08-15</div>
+      <ul class="news-list"><li><span class="nd">08/13</span><span class="nt">특정 종목을 재평가하는 것은 투자자가 구축할 수 있는 가장 좋은 습관 중 하나입니다.</span></li><li><span class="nd">08/11</span><span class="nt">Lennar 주식은 지난 1년 동안 약세를 보였지만 시장에서는 여전히 낮은 가격으로 가격을 책정하고 </span></li></ul>
+    </article></div></section>
+  <section class="block"><h2 class="block-title">관심목록 구성</h2><div class="src-list">
+      <div class="src-row">
+        <span class="src-name">내 관심목록</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:100%"></div></div>
+        <span class="src-count">69</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">워런 버핏</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:41%"></div></div>
+        <span class="src-count">28</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">저평가</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:38%"></div></div>
+        <span class="src-count">26</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">현금 흐름 탄탄한 방어주</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:35%"></div></div>
+        <span class="src-count">24</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">S&amp;P 500 지수 이기기 - 2025년 12월</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:28%"></div></div>
+        <span class="src-count">19</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">ProPicks AI - Tech Titans</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:19%"></div></div>
+        <span class="src-count">13</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">핫 애널리스트 등급변경</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:14%"></div></div>
+        <span class="src-count">10</span>
+      </div>
+      <div class="src-row">
+        <span class="src-name">ProPicks AI(KR) - KOSPI20 수출성장</span>
+        <div class="src-bar-track"><div class="src-bar" style="width:10%"></div></div>
+        <span class="src-count">7</span>
+      </div></div></section>
+  <section class="block"><h2 class="block-title">보유종목 뉴스 · 국내</h2><div class="hold-list">
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">035420</span>
+        <span class="pos-name">NAVER</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">정부가 인공지능(AI)을 행정 현장에 본격적으로 도입하면서 네이버클라우드와 삼성SDS의 공</span></li><li><span class="nd">08/15</span><span class="nt">생성형 AI 확산으로 검색 지배력 위협 두나무와 결합도 규제 문턱서 제자리걸음 네이버가 안</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">005380</span>
+        <span class="pos-name">현대차</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">휴머노이드 로봇 &#x27;아틀라스(Atlas)&#x27;의 상용화가 가시권에 들어오면서 현대차그룹 밸류체인</span></li><li><span class="nd">08/15</span><span class="nt">현대차 튀르키예법인(HMTR)은 14일(현지시간) 이스탄불 인근 코자엘리주(州) 이즈미트공</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">042660</span>
+        <span class="pos-name">한화오션</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">도널드 트럼프 미국 대통령이 현지 조선산업에 투자한 외국 업체에 본국에서 미 군함을 최대 </span></li><li><span class="nd">08/14</span><span class="nt">도널드 트럼프 미국 대통령이 외국 조선업체도 자국에서 최대 2척의 해군 함정을 건조할 수 </span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">071050</span>
+        <span class="pos-name">한국금융지주</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">김성환 한국투자증권 대표이사가 올해 상반기 45억 원이 넘는 보수를 받았다.</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">005930</span>
+        <span class="pos-name">삼성전자</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">삼성전자 갤럭시 Z 폴드8의 초반 판매 양상이 심상치 않다.</span></li><li><span class="nd">08/15</span><span class="nt">이번주 외국인과 기관은 삼성전자와 SK하이닉스를 비롯한 대형주를 나란히 쓸어 담으며 코스피</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">009830</span>
+        <span class="pos-name">한화솔루션</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">김동관 한화그룹 수석부회장이 한화솔루션으로부터 올해 상반기 보수 11억7500만원을 수령했</span></li><li><span class="nd">08/13</span><span class="nt">여천NCC가 롯데케미칼의 분할법인을 합병해 기존 출자사인 DL케미칼, 한화솔루션 등 3개 </span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">247540</span>
+        <span class="pos-name">에코프로비엠</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li class="nt muted">관련 뉴스 없음</li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">012450</span>
+        <span class="pos-name">한화에어로스페이스</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">한화에어로스페이스가 K9 자주포의 탄착 정밀도를 기존보다 6배 이상 끌어올리는 핵심 첨단 </span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">034020</span>
+        <span class="pos-name">두산에너빌리티</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">빌 게이츠 테라파워 창업자의 방한을 계기로 SK와 HD현대, 현대건설, 두산에너빌리티 등 </span></li><li><span class="nd">08/14</span><span class="nt">마이크로소프트(MS) 공동창업자이자 테라파워 창업자인 빌 게이츠 게이츠 재단 이사장이 방한</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">018670</span>
+        <span class="pos-name">SK가스</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/13</span><span class="nt">최창원 SK수펙스추구협의회 의장(SK디스커버리·SK가스 부회장)이 올해 상반기 SK디스커버</span></li><li><span class="nd">08/11</span><span class="nt">▲보통주추가상장=SK가스(018670)(주식매수선택권행사) ▲공모주청약=기도산업(주관사 미</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">017670</span>
+        <span class="pos-name">SK텔레콤</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">이동통신 3사가 장기고객을 붙잡기 위해 요금 할인이나 포인트를 넘어 미식·공연·여가 등 &#x27;</span></li><li><span class="nd">08/14</span><span class="nt">국내 이동통신 3사의 인공지능(AI) 사업 경쟁이 이어지는 가운데 올해 상반기 매출 대비 </span></li></ul>
+    </div></div></section>
+  <section class="block"><h2 class="block-title">보유종목 뉴스 · 미국</h2><div class="hold-list">
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">TSLA</span>
+        <span class="pos-name">테슬라</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">현금 지급 자격이 있는 사람과 Tesla &quot;유휴 수수료&quot; 집단 소송에서 청구서를 제출하는 </span></li><li><span class="nd">08/14</span><span class="nt">Elon Musk의 주력 회사인 Tesla, Inc. 간의 합병 가능성</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">MSFT</span>
+        <span class="pos-name">마이크로소프트</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">2026년 8월, JFrog는 매출이 미화 163달러로 증가한 2분기 결과를 보고했습니다.</span></li><li><span class="nd">08/14</span><span class="nt">기관 투자자들은 반도체, 반도체 등 주요 주식 시장 부문에서 소폭 철수했습니다.</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">META</span>
+        <span class="pos-name">메타플랫폼스</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/15</span><span class="nt">메타 플랫폼의 공정 가치 추정치는 약 US$828에서 감소되었습니다.</span></li><li><span class="nd">08/14</span><span class="nt">기관 투자자들은 반도체, 반도체 등 주요 주식 시장 부문에서 소폭 철수했습니다.</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">IREN</span>
+        <span class="pos-name">아이렌</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">Microsoft(NasdaqGS:MSFT)는 Childres에서 IREN으로부터 처음으로</span></li><li><span class="nd">08/14</span><span class="nt">Cipher는 가치 기준으로 펀드의 가장 큰 보유 자산으로 남아 있었고 Soluna는 포트</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">AVGO</span>
+        <span class="pos-name">브로드컴</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">투자자들이 데이터, 중동 긴장을 평가함에 따라 월스트리트는 하락세로 마감</span></li><li><span class="nd">08/14</span><span class="nt">투자 회사는 업계에서 시장 최대의 반도체 승자들 중 일부로부터 멀어졌습니다.</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">OKLO</span>
+        <span class="pos-name">오클로</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">두 에너지 주식 모두 상당한 관심을 받고 있지만, 분명히 하나가 더 나은 매수입니다.</span></li><li><span class="nd">08/14</span><span class="nt">Oklo의 Groves 원자로 이정표는 실제 원자력 운영 경험을 추가하지만 더 큰 Auro</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">ENVX</span>
+        <span class="pos-name">에노빅스</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">Enovix Corporation은 최근 2026년 2분기 실적을 보고하여 미화 9달러를 </span></li><li><span class="nd">08/14</span><span class="nt">Enovix(ENVX)는 방금 2분기 매출을 9달러로 보고했습니다.</span></li></ul>
+    </div>
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="ticker sm">IONQ</span>
+        <span class="pos-name">아이온큐</span>
+        <span class="chip chip-us sm">US</span>
+      </div>
+      <ul class="news-list"><li><span class="nd">08/14</span><span class="nt">IonQ, Quantinuum 및 기타 양자 분야의 유명 기업들이 실적을 보고했습니다.</span></li><li><span class="nd">08/14</span><span class="nt">한 회사는 사이버 보안 분야에서 수익성이 높고 성장하는 리더입니다.</span></li></ul>
+    </div></div></section>
+  <footer class="foot"><p>이 페이지는 주기적으로 갱신됩니다 · 매매 신호는 참고용이며 투자 조언이 아닙니다</p></footer>
+</div>
+</body></html>
