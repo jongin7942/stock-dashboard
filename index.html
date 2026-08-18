@@ -4,10 +4,11 @@
 <style>
 :root{--bg:#F3F1EA;--surface:#FFFFFF;--border:#E4DFD2;--ink:#1E3B36;--ink-soft:#33564E;
 --text-primary:#211E19;--text-secondary:#6E6858;--text-muted:#9A947F;--good:#2F6B4F;--bad:#AE4A30;
+--buy:#D91C29;--sell:#1E6FD9;
 --chip-us-bg:#E7EEEC;--chip-us-text:#1E3B36;--chip-kr-bg:#F1E7DC;--chip-kr-text:#7A4A22;--bar:#DCE7E3}
 @media (prefers-color-scheme: dark){:root{--bg:#161512;--surface:#1E1C18;--border:#332F27;--ink:#7FBBA9;
 --ink-soft:#5C9686;--text-primary:#EFEBE1;--text-secondary:#B0A891;--text-muted:#7C7563;--good:#6EC493;
---bad:#E08669;--chip-us-bg:#233230;--chip-us-text:#9BCFC0;--chip-kr-bg:#332A1D;--chip-kr-text:#D6A96F;--bar:#2A3833}}
+--bad:#E08669;--buy:#FF5A5F;--sell:#5EA2FF;--chip-us-bg:#233230;--chip-us-text:#9BCFC0;--chip-kr-bg:#332A1D;--chip-kr-text:#D6A96F;--bar:#2A3833}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg)}
 .page{background:var(--bg);color:var(--text-primary);
@@ -47,6 +48,9 @@ font-variant-numeric:tabular-nums}
 .metric-value.muted{color:var(--text-secondary);font-weight:400}
 .pl-good{color:var(--good)}
 .pl-bad{color:var(--bad)}
+.sig-buy{color:var(--buy);font-weight:800}
+.sig-sell{color:var(--sell);font-weight:800}
+.sig-cat{font-size:15px;margin:16px 0 8px}
 .pl-flat{color:var(--text-secondary)}
 .pos-meta{margin-top:0.65rem;font-size:11px;color:var(--text-muted)}
 .news-list{list-style:none;margin:0.6rem 0 0;padding-top:0.6rem;border-top:1px solid var(--border);
@@ -79,34 +83,37 @@ font-variant-numeric:tabular-nums}
   <header class="top">
     <div class="top-mark">VALUE<span>LEDGER</span></div>
     <div class="top-sub">인베스팅닷컴 적정가치 기반 관심목록 &amp; 포지션</div>
-    <div class="top-time">갱신 2026-08-18 17:35</div>
+    <div class="top-time">갱신 2026-08-18 17:37</div>
   </header>
   <section class="stats-strip">
     <div class="stat"><span class="stat-num">8</span><span class="stat-label">보유 포지션</span></div>
     <div class="stat"><span class="stat-num">622</span><span class="stat-label">관심종목</span></div>
     <div class="stat"><span class="stat-num">100%</span><span class="stat-label">적정가치 확보</span></div>
   </section>
-  <section class="block"><h2 class="block-title">매수·매도 시그널 (최근 14일)</h2><div class="hold-list">
-    <div class="hold-item">
-      <div class="hold-head">
-        <span class="nd">2026-08-17</span>
-        <span class="metric-value pl-bad">🛑 손절</span>
-        <span class="ticker sm">TEST2</span>
-        <span class="pos-name">테스트2</span>
-        <span class="chip chip-kr sm">KR</span>
-      </div>
-      <ul class="news-list"><li><span class="nt">50,000원 · 진입 대비 -8.2%</span></li></ul>
-    </div>
+  <section class="block"><h2 class="block-title">매수·매도 시그널 (최근 14일)</h2>
+    <h3 class="sig-cat sig-buy">🔴 매수 시그널 (1)</h3><div class="hold-list">
     <div class="hold-item">
       <div class="hold-head">
         <span class="nd">2026-08-18</span>
-        <span class="metric-value pl-good">🟢 매수</span>
+        <span class="metric-value sig-buy">🟢 매수</span>
         <span class="ticker sm">TEST1</span>
         <span class="pos-name">테스트종목</span>
         <span class="chip chip-us sm">US</span>
       </div>
       <ul class="news-list"><li><span class="nt">$123.45 · 적정가 대비 -20% 할인</span></li></ul>
-    </div></div></section>
+    </div></div>
+    <h3 class="sig-cat sig-sell">🔵 매도 시그널 (1)</h3><div class="hold-list">
+    <div class="hold-item">
+      <div class="hold-head">
+        <span class="nd">2026-08-17</span>
+        <span class="metric-value sig-sell">🛑 손절</span>
+        <span class="ticker sm">TEST2</span>
+        <span class="pos-name">테스트2</span>
+        <span class="chip chip-kr sm">KR</span>
+      </div>
+      <ul class="news-list"><li><span class="nt">50,000원 · 진입 대비 -8.2%</span></li></ul>
+    </div></div>
+  </section>
   <section class="block"><h2 class="block-title">보유 포지션</h2><div class="pos-grid">
     <article class="pos-card">
       <header class="pos-head">
@@ -313,7 +320,7 @@ font-variant-numeric:tabular-nums}
         <span class="pos-name">NAVER</span>
         <span class="chip chip-kr sm">KR</span>
       </div>
-      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">무료로 이용할 수 있는 인공지능(AI) 챗봇과 공공 AI 에이전트를 구축하는 ‘모두의 AI</span></li><li><span class="nd">08/18</span><span class="nt">국민에게 무료 AI 챗봇과 공공 AI 에이전트를 제공하는 ‘모두의 AI’ 사업을 놓고 국내</span></li></ul>
+      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">무료로 이용할 수 있는 인공지능(AI) 챗봇과 공공 AI 에이전트를 구축하는 ‘모두의 AI</span></li><li><span class="nd">08/18</span><span class="nt">정부가 추진하는 &#x27;모두의 AI&#x27; 프로젝트에 이동통신 3사와 카카오, 이스트소프트 등이 출사</span></li></ul>
     </div>
     <div class="hold-item">
       <div class="hold-head">
@@ -345,7 +352,7 @@ font-variant-numeric:tabular-nums}
         <span class="pos-name">삼성전자</span>
         <span class="chip chip-kr sm">KR</span>
       </div>
-      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">AI 데이터센터 투자 확대로 기업용 솔리드스테이트드라이브(SSD) 수요가 늘면서 글로벌 낸</span></li><li><span class="nd">08/18</span><span class="nt">모델 겸 방송인 이현이가 과거 삼성전자 주가가 5만원이었을 때 주식을 사들여 보유해 왔다고</span></li></ul>
+      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">‘D램기술 유출’ 혐의재판서 기소된 前 삼성 직원 자백 중국 최대 D램 반도체 기업인 창신</span></li><li><span class="nd">08/18</span><span class="nt">삼성전자와 SK하이닉스의 지난 2분기 낸드플래시 매출이 전분기 대비 70%와 90% 급증하</span></li></ul>
     </div>
     <div class="hold-item">
       <div class="hold-head">
@@ -402,7 +409,7 @@ font-variant-numeric:tabular-nums}
         <span class="pos-name">테슬라</span>
         <span class="chip chip-us sm">US</span>
       </div>
-      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">전 Tesla 회장 Jon McNeill은 로드스터가 SpaceX가 개발한 저온 가스를 사</span></li><li><span class="nd">08/18</span><span class="nt">Elon Musk가 Tesla Inc.를 합병할 수 있다는 예측 시장에 대한 베팅이 늘어나</span></li></ul>
+      <ul class="news-list"><li><span class="nd">08/18</span><span class="nt">존 맥닐 전 테슬라 사장은 로드스터가 스페이스X가 개발한 저온가스를 이용해 호버링할 수 있</span></li><li><span class="nd">08/18</span><span class="nt">Elon Musk가 Tesla Inc.를 합병할 수 있다는 예측 시장에 대한 베팅이 늘어나</span></li></ul>
     </div>
     <div class="hold-item">
       <div class="hold-head">
@@ -434,7 +441,7 @@ font-variant-numeric:tabular-nums}
         <span class="pos-name">브로드컴</span>
         <span class="chip chip-us sm">US</span>
       </div>
-      <ul class="news-list"><li><span class="nd">08/17</span><span class="nt">시장을 뒤흔드는 숫자는 향후 거래에 대한 모델링된 상한선입니다.</span></li><li><span class="nd">08/17</span><span class="nt">패밀리 오피스는 Broadcom을 완전히 퇴사하면서 Amazon 지분을 1,000% 이상 </span></li></ul>
+      <ul class="news-list"><li><span class="nd">08/17</span><span class="nt">시장을 뒤흔드는 숫자는 향후 거래에 대한 모델링된 상한선입니다.</span></li><li><span class="nd">08/17</span><span class="nt">패밀리 오피스는 Broadcom을 완전히 퇴출하면서 Amazon 지분을 1,000% 이상 </span></li></ul>
     </div>
     <div class="hold-item">
       <div class="hold-head">
